@@ -1,0 +1,9 @@
+services:
+  custom-nginx:
+    build: .
+    image: localhost:5000/custom-nginx:latest
+    ports:
+      - "8080:80"
+    volumes:
+      - ./html_data:/var/opt/nginx
+    restart: always

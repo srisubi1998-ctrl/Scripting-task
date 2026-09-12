@@ -7,29 +7,24 @@ terraform {
   }
 }
 
-# Primary Provider: us-east-1
 provider "aws" {
   alias  = "us_east_1"
   region = "us-east-1"
 }
 
-# Secondary Provider: us-west-2
 provider "aws" {
   alias  = "us_west_2"
   region = "us-west-2"
 }
 
-# Ensure default VPC exists in us-east-1
 resource "aws_default_vpc" "default_east" {
   provider = aws.us_east_1
 }
 
-# Ensure default VPC exists in us-west-2
 resource "aws_default_vpc" "default_west" {
   provider = aws.us_west_2
 }
 
-# Ubuntu 22.04 AMI Lookup for us-east-1
 data "aws_ami" "ubuntu_east" {
   provider    = aws.us_east_1
   most_recent = true
@@ -41,10 +36,9 @@ data "aws_ami" "ubuntu_east" {
     name   = "virtualization-type"
     values = ["hvm"]
   }
-  owners = ["099720109477"] # Canonical
+  owners = ["099720109477"]
 }
 
-# Ubuntu 22.04 AMI Lookup for us-west-2
 data "aws_ami" "ubuntu_west" {
   provider    = aws.us_west_2
   most_recent = true
@@ -56,10 +50,9 @@ data "aws_ami" "ubuntu_west" {
     name   = "virtualization-type"
     values = ["hvm"]
   }
-  owners = ["099720109477"] # Canonical
+  owners = ["099720109477"]
 }
 
-# EC2 Instance in us-east-1
 resource "aws_instance" "east_server" {
   provider      = aws.us_east_1
   ami           = data.aws_ami.ubuntu_east.id
@@ -72,7 +65,6 @@ resource "aws_instance" "east_server" {
   depends_on = [aws_default_vpc.default_east]
 }
 
-# EC2 Instance in us-west-2
 resource "aws_instance" "west_server" {
   provider      = aws.us_west_2
   ami           = data.aws_ami.ubuntu_west.id
@@ -85,7 +77,6 @@ resource "aws_instance" "west_server" {
   depends_on = [aws_default_vpc.default_west]
 }
 
-# Output Instance IDs
 output "us_east_1_instance_id" {
   value       = aws_instance.east_server.id
   description = "Instance ID in us-east-1"
